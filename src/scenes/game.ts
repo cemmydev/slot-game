@@ -1,6 +1,6 @@
 import { Scene } from 'phaser';
 import { config } from '../config';
-import Machine from '../objects/machine.js';
+import Machine from '../objects/machine';
 import Button from '../objects/button.js';
 import PayTable from '../objects/payTable.js';
 import DebugBar from '../objects/debugBar';
