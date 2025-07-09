@@ -1,17 +1,24 @@
 import { GameObjects, Scene } from 'phaser';
 import { GameConfig } from '../config';
-import Slot from './slot';
 import DragSlot from './dragSlot.js';
 
+interface DragSlotInterface {
+  x: number;
+  y: number;
+  frame: { name: string | number };
+  input: Phaser.Types.Input.InteractiveObject | null;
+  reset(): void;
+}
+
 interface DropZone extends Phaser.GameObjects.Zone {
-  previousSlot?: DragSlot;
+  previousSlot?: DragSlotInterface;
   reel: number;
   slot: number;
 }
 
 export default class DebugBar extends GameObjects.Container {
   public debugSlots: number[][];
-  private scene: Scene;
+  public override scene: Scene;
   private gameConfig: GameConfig;
   private config: GameConfig['debugBar'];
   private fixedMode: boolean;
@@ -113,7 +120,7 @@ export default class DebugBar extends GameObjects.Container {
     
     slots.slotsList.forEach((sprite: string, i: number) => {
       for (let j = 0; j < this.gameConfig.game.machine.reelsCount; j++) {
-        const dragSlot = new DragSlot(this.scene, 80 * i + 80, 40, slots, sprite);
+        const dragSlot = new DragSlot(this.scene, 80 * i + 80, 40, slots, sprite as any);
         this.add(dragSlot);
         this.dragSlots.push(dragSlot);
       }
@@ -132,12 +139,12 @@ export default class DebugBar extends GameObjects.Container {
       });
     });
 
-    this.scene.input.on('drag', function (pointer: Phaser.Input.Pointer, gameObject: Phaser.GameObjects.GameObject, dragX: number, dragY: number) {
+    this.scene.input.on('drag', function (_pointer: Phaser.Input.Pointer, gameObject: Phaser.GameObjects.GameObject, dragX: number, dragY: number) {
       (gameObject as any).x = dragX;
       (gameObject as any).y = dragY;
     });
-    
-    this.scene.input.on('drop', (pointer: Phaser.Input.Pointer, gameObject: DragSlot, dropZone: DropZone) => {
+
+    this.scene.input.on('drop', (_pointer: Phaser.Input.Pointer, gameObject: DragSlot, dropZone: DropZone) => {
       gameObject.x = dropZone.x;
       gameObject.y = dropZone.y;
 
@@ -153,7 +160,7 @@ export default class DebugBar extends GameObjects.Container {
       }
     });
     
-    this.scene.input.on('dragend', function (pointer: Phaser.Input.Pointer, gameObject: DragSlot, dropped: boolean) {
+    this.scene.input.on('dragend', function (_pointer: Phaser.Input.Pointer, gameObject: DragSlot, dropped: boolean) {
       if (!dropped) {
         gameObject.x = gameObject.input!.dragStartX;
         gameObject.y = gameObject.input!.dragStartY;
@@ -162,7 +169,7 @@ export default class DebugBar extends GameObjects.Container {
   }
 
   private _createDropZone(x: number, y: number, radius: number = 40, reel: number, slot: number): void {
-    const zone = this.scene.add.zone(x, y).setCircleDropZone(radius) as DropZone;
+    const zone = this.scene.add.zone(x, y, radius, radius).setCircleDropZone(radius) as DropZone;
     zone.input!.dropZone = true;
     zone.reel = reel;
     zone.slot = slot;

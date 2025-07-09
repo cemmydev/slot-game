@@ -102,7 +102,7 @@ export default class GameScene extends Scene {
     this.debugBar = new DebugBar(this, config);
   }
 
-  update(): void {
+  override update(): void {
     if (!this.machine.locked) {
       this.spinButton.enable();
     }
