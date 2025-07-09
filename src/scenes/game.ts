@@ -3,7 +3,7 @@ import { config } from '../config';
 import Machine from '../objects/machine.js';
 import Button from '../objects/button.js';
 import PayTable from '../objects/payTable.js';
-import DebugBar from '../objects/debugBar.js';
+import DebugBar from '../objects/debugBar';
 
 export default class GameScene extends Scene {
   private balance!: number;
