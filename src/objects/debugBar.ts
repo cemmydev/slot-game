@@ -1,6 +1,6 @@
 import { GameObjects, Scene } from 'phaser';
 import { GameConfig } from '../config';
-import DragSlot from './dragSlot.js';
+import DragSlot from './dragSlot';
 
 interface DragSlotInterface {
   x: number;

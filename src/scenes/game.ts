@@ -1,8 +1,8 @@
 import { Scene } from 'phaser';
 import { config } from '../config';
 import Machine from '../objects/machine';
-import Button from '../objects/button.js';
-import PayTable from '../objects/payTable.js';
+import Button from '../objects/button';
+import PayTable from '../objects/payTable';
 import DebugBar from '../objects/debugBar';
 
 export default class GameScene extends Scene {

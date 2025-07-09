@@ -1,6 +1,6 @@
 import { Scene } from 'phaser';
 import { GameConfig } from '../config';
-import Reel from './reel.js';
+import Reel from './reel';
 
 // Define interfaces for better type safety
 interface PayTableConfig {
