@@ -1,6 +1,6 @@
 import { GameObjects, Scene } from 'phaser';
 import { GameConfig } from '../config';
-import Slot from './slot.js';
+import Slot from './slot';
 import DragSlot from './dragSlot.js';
 
 interface DropZone extends Phaser.GameObjects.Zone {
@@ -19,10 +19,10 @@ export default class DebugBar extends GameObjects.Container {
   private modeSwitcher!: Phaser.GameObjects.BitmapText;
   private dragSlots: DragSlot[];
 
-  constructor(scene: Scene, config: GameConfig) {        
+  constructor(scene: Scene, config: GameConfig) {
     super(scene, 0, config.size.height);
-    
-    scene.add.existing(this);
+
+    scene.add.existing(this as any);
 
     this.debugSlots = [[0, 0, 0], [0, 0, 0], [0, 0, 0]];
 

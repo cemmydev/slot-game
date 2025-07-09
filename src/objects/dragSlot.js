@@ -1,5 +1,5 @@
 import { GameObjects } from 'phaser'
-import Slot from './slot'
+import Slot from './slot.ts'
 
 export default class DragSlot extends Slot {
     constructor(scene, x, y, slots, slot = null) {

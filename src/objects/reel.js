@@ -1,5 +1,5 @@
 import { GameObjects } from 'phaser'
-import Slot from './slot'
+import Slot from './slot.ts'
 
 export default class Reel extends GameObjects.Container {
     constructor(scene, x, y, config, slots) {
