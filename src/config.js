@@ -6,7 +6,7 @@ const config = {
         backgroundColor: '000000'
     },
     size: {
-        minWidht: 800,
+        minWidth: 800,
         minHeight: 600,
         zoom: 1,
         centerX: window.innerWidth / 2,

@@ -1,4 +1,3 @@
-const HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
 const path = require('path')
 const build = require('../build.json')
 
@@ -7,7 +6,37 @@ module.exports = {
     resolve: {
         extensions: ['.ts', '.tsx', '.js', '.jsx']
     },
-    plugins: [
-        new HardSourceWebpackPlugin()
-    ]
+    module: {
+        rules: [
+            {
+                test: /\.(js|jsx|ts|tsx)$/,
+                exclude: /node_modules/,
+                use: {
+                    loader: 'babel-loader',
+                    options: {
+                        presets: [
+                            '@babel/preset-env',
+                            '@babel/preset-typescript'
+                        ]
+                    }
+                }
+            },
+            {
+                test: /\.css$/,
+                use: ['style-loader', 'css-loader']
+            },
+            {
+                test: /\.(png|jpe?g|gif|svg|ico)$/,
+                type: 'asset/resource'
+            },
+            {
+                test: /\.(woff|woff2|eot|ttf|otf)$/,
+                type: 'asset/resource'
+            }
+        ]
+    },
+    // Webpack 5 has built-in caching, no need for hard-source-webpack-plugin
+    cache: {
+        type: 'filesystem'
+    }
 }
