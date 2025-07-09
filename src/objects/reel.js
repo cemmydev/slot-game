@@ -63,7 +63,7 @@ export default class Reel extends GameObjects.Container {
                 }
             }
 
-            this.result[ this.updSlotCount ] = slot.update(updateVal)
+            this.result[ this.updSlotCount ] = slot.updateSlot(updateVal)
             slot.y = 0
         }
     }

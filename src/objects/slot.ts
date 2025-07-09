@@ -1,5 +1,4 @@
 import { GameObjects, Utils, Scene } from 'phaser';
-import { GameConfig } from '../config';
 
 export interface SlotConfig {
   atlasName: string;
@@ -7,7 +6,7 @@ export interface SlotConfig {
 }
 
 export default class Slot extends GameObjects.Sprite {
-  protected slots: string[];
+  protected slots!: string[];
 
   constructor(scene: Scene, x: number, y: number, slots: SlotConfig, slot: string | null = null) {
     super(scene, x, y, slots.atlasName);
@@ -20,14 +19,12 @@ export default class Slot extends GameObjects.Sprite {
 
     this.slots = slots.slotsList;
 
-    this.update(slot);
+    this.updateSlot(slot);
   }
 
-  public update(slot?: string | null): string {
-    if (!slot) {
-      slot = Utils.Array.GetRandom(this.slots);
-    }
-    this.setFrame(slot);
-    return slot;
+  public updateSlot(slot?: string | null): string {
+    const selectedSlot = slot || Utils.Array.GetRandom(this.slots);
+    this.setFrame(selectedSlot);
+    return selectedSlot;
   }
 }
