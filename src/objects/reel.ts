@@ -1,6 +1,7 @@
 import { GameObjects, Scene } from 'phaser';
 import { GameConfig } from '../config';
 import Slot, { SlotConfig } from './slot';
+import { eventManager, ReelStoppedEvent } from '../events';
 
 interface ReelConfig {
   width: number;
@@ -21,6 +22,8 @@ export default class Reel extends GameObjects.Container {
   private resultSlots: (string | number)[];
   public result: string[];
   private rotating!: Phaser.Time.TimerEvent;
+  private reelIndex: number = 0;
+  private totalReels: number = 3;
 
   constructor(scene: Scene, x: number, y: number, config: ReelConfig, slots: SlotConfig) {
     super(scene, x, y - config.height / 2);
@@ -80,6 +83,13 @@ export default class Reel extends GameObjects.Container {
           this.rotating.remove();
           this.slowdown = false;
           this.updSlotCount = 0;
+
+          // Emit reel stopped event
+          eventManager.emit(new ReelStoppedEvent({
+            reelIndex: this.reelIndex,
+            result: [...this.result],
+            totalReels: this.totalReels
+          }));
         }
       }
 
@@ -101,11 +111,16 @@ export default class Reel extends GameObjects.Container {
     this.iterate((slot: Slot) => this._move(slot));        
   }
 
-  public stopSpin(resultSlots: (string | number)[], stopDelay: number): void {   
+  public stopSpin(resultSlots: (string | number)[], stopDelay: number): void {
     this.resultSlots[0] = resultSlots[2] ? resultSlots[2] : 0;
     this.resultSlots[1] = resultSlots[1] ? resultSlots[1] : 0;
     this.resultSlots[2] = resultSlots[0] ? resultSlots[0] : 0;
-    
+
     setTimeout(() => this.slowdown = true, stopDelay);
+  }
+
+  public setReelInfo(index: number, total: number): void {
+    this.reelIndex = index;
+    this.totalReels = total;
   }
 }

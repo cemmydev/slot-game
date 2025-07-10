@@ -1,6 +1,12 @@
 import { Scene } from 'phaser';
 import { GameConfig } from '../config';
 import Reel from './reel';
+import {
+  eventManager,
+  SpinCompletedEvent,
+  WinDetectedEvent,
+  WinCalculatedEvent
+} from '../events';
 
 // Define interfaces for better type safety
 interface PayTableConfig {
@@ -82,10 +88,15 @@ export default class Machine {
   private _fillWithReels(scene: Scene, count: number, config: GameConfig['game']): void {
     let x = this.x + this.config.reelsFirstOffset;
     const y = this.y + this.config.height / 2;
-    
+
     for (let i = 0; i < count; i++) {
       if (i) x += (config.reel.width + this.config.reelsOffset);
-      this.reels.push(new Reel(scene, x, y, config.reel, config.slots) as ReelInterface);
+      const reel = new Reel(scene, x, y, config.reel, config.slots) as ReelInterface;
+      // Set reel index and total reels for event emission
+      if ('setReelInfo' in reel) {
+        (reel as any).setReelInfo(i, count);
+      }
+      this.reels.push(reel);
     }
   }
 
@@ -112,16 +123,28 @@ export default class Machine {
     });
 
     this._checkWinCombinations();
+
+    // Emit spin completed event
+    eventManager.emit(new SpinCompletedEvent({
+      results: this.result,
+      winAmount: this.winSum,
+      winLines: this.winLines.filter(line => line > 0)
+    }));
   }
 
   private _checkWinCombinations(): void {
     this.winSum = 0;
+    this.winLines = [];
+    const lineWins: Array<{ line: number; amount: number; symbols: string[] }> = [];
+
     this.result.forEach((line: string[], i: number) => {
-      if ((line[0] === line[1]) && (line[0] === line[2])) {                
+      if ((line[0] === line[1]) && (line[0] === line[2])) {
         if (this.payTable.combinationOf3[line[0]]) {
-          console.log(`${i} line win ${this.payTable.combinationOf3[line[0]][i]}`);
-          this.winLines[i] = this.payTable.combinationOf3[line[0]][i];
-          this.winSum += this.payTable.combinationOf3[line[0]][i];
+          const winAmount = this.payTable.combinationOf3[line[0]][i];
+          console.log(`${i} line win ${winAmount}`);
+          this.winLines[i] = winAmount;
+          this.winSum += winAmount;
+          lineWins.push({ line: i, amount: winAmount, symbols: [...line] });
           this._highlight(i);
         }
       } else {
@@ -131,16 +154,32 @@ export default class Machine {
           if (combination[0].indexOf(line[0]) === -1) win = false;
           if (combination[0].indexOf(line[1]) === -1) win = false;
           if (combination[0].indexOf(line[2]) === -1) win = false;
-          
+
           if (win) {
-            console.log(`${i} line win ${this.payTable.onlyThisSlotsCombination[j][1]}`);
-            this.winLines[i] = this.payTable.onlyThisSlotsCombination[j][1];
-            this.winSum += this.payTable.onlyThisSlotsCombination[j][1];
+            const winAmount = this.payTable.onlyThisSlotsCombination[j][1];
+            console.log(`${i} line win ${winAmount}`);
+            this.winLines[i] = winAmount;
+            this.winSum += winAmount;
+            lineWins.push({ line: i, amount: winAmount, symbols: [...line] });
             this._highlight(i);
           }
         });
       }
     });
+
+    // Emit win events if there are any wins
+    if (this.winSum > 0) {
+      eventManager.emit(new WinDetectedEvent({
+        winAmount: this.winSum,
+        winLines: this.winLines.map((_, index) => index).filter(index => this.winLines[index] > 0),
+        combination: this.result[0] // Main line combination
+      }));
+
+      eventManager.emit(new WinCalculatedEvent({
+        totalWin: this.winSum,
+        lineWins
+      }));
+    }
   }
 
   private _highlight(line: number): void { 
