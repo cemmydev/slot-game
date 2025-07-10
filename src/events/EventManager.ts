@@ -5,7 +5,6 @@ import { UIEventHandler } from './handlers/UIEventHandler';
 import { DebugEventHandler } from './handlers/DebugEventHandler';
 import { AnimationEventHandler } from './handlers/AnimationEventHandler';
 import { EventLogger, LogLevel } from './EventLogger';
-import { DebugConsole } from './DebugConsole';
 
 /**
  * Central manager for all event handlers
@@ -15,7 +14,6 @@ export class EventManager {
   private eventBus: EventBus;
   private handlers: Map<string, BaseEventHandler> = new Map();
   private eventLogger?: EventLogger;
-  private debugConsole?: DebugConsole;
   private isInitialized = false;
 
   constructor(eventBus?: EventBus) {
@@ -29,7 +27,6 @@ export class EventManager {
     enableDebugLogging?: boolean;
     debugLogLevel?: 'none' | 'basic' | 'detailed' | 'verbose';
     enableAdvancedLogging?: boolean;
-    enableDebugConsole?: boolean;
     logLevel?: LogLevel;
   } = {}): void {
     if (this.isInitialized) {
@@ -41,7 +38,6 @@ export class EventManager {
       enableDebugLogging = true,
       debugLogLevel = 'basic',
       enableAdvancedLogging = true,
-      enableDebugConsole = true,
       logLevel = LogLevel.INFO
     } = options;
 
@@ -56,11 +52,6 @@ export class EventManager {
     // Initialize advanced logging
     if (enableAdvancedLogging) {
       this.initializeEventLogger(logLevel);
-    }
-
-    // Initialize debug console
-    if (enableDebugConsole && this.eventLogger) {
-      this.initializeDebugConsole(scene);
     }
 
     // Create and register handlers
@@ -86,14 +77,7 @@ export class EventManager {
     this.eventLogger.start();
   }
 
-  /**
-   * Initialize debug console
-   */
-  private initializeDebugConsole(scene: Scene): void {
-    if (this.eventLogger) {
-      this.debugConsole = new DebugConsole(scene, this, this.eventLogger);
-    }
-  }
+
 
   /**
    * Create all event handlers
@@ -170,12 +154,7 @@ export class EventManager {
     return this.eventLogger;
   }
 
-  /**
-   * Get the debug console
-   */
-  getDebugConsole(): DebugConsole | undefined {
-    return this.debugConsole;
-  }
+
 
   /**
    * Add a custom handler
@@ -265,12 +244,9 @@ export class EventManager {
     this.stopAllHandlers();
     this.handlers.clear();
 
-    // Cleanup logger and debug console
+    // Cleanup logger
     if (this.eventLogger) {
       this.eventLogger.stop();
-    }
-    if (this.debugConsole) {
-      this.debugConsole.destroy();
     }
 
     this.eventBus.clear();

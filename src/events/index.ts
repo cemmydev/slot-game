@@ -14,7 +14,6 @@ export * from './handlers/AnimationEventHandler';
 
 // Logging and debugging
 export * from './EventLogger';
-export * from './DebugConsole';
 
 // Utilities
 export * from './EventUtils';

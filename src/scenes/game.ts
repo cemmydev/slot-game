@@ -58,7 +58,6 @@ export default class GameScene extends Scene {
       enableDebugLogging: true,
       debugLogLevel: 'basic',
       enableAdvancedLogging: true,
-      enableDebugConsole: true,
       logLevel: LogLevel.INFO
     });
 
