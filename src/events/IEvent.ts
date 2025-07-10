@@ -2,6 +2,8 @@
  * Base interface for all game events
  */
 export interface IEvent {
+  /** Unique identifier for the event instance */
+  readonly id: string;
   /** Unique identifier for the event type */
   readonly type: string;
   /** Timestamp when the event was created */
@@ -12,17 +14,21 @@ export interface IEvent {
   readonly source?: string;
 }
 
+import { ulid } from 'ulid';
+
 /**
  * Base abstract class for all game events
  */
 export abstract class BaseEvent implements IEvent {
+  public readonly id: string;
   public readonly timestamp: number;
-  
+
   constructor(
     public readonly type: string,
     public readonly data?: any,
     public readonly source?: string
   ) {
+    this.id = ulid();
     this.timestamp = Date.now();
   }
 }

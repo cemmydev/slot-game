@@ -16,6 +16,9 @@ export * from './handlers/AnimationEventHandler';
 export * from './EventLogger';
 export * from './DebugConsole';
 
+// Utilities
+export * from './EventUtils';
+
 // Global instances
 export { eventBus } from './EventBus';
 export { eventManager } from './EventManager';

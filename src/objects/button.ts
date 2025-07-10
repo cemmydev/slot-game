@@ -1,4 +1,5 @@
 import { GameObjects, Scene } from 'phaser';
+import { ulid } from 'ulid';
 import { eventManager, ButtonStateChangedEvent } from '../events';
 
 export default class Button extends GameObjects.Sprite {
@@ -14,7 +15,7 @@ export default class Button extends GameObjects.Sprite {
     this.setInteractive();
     this.disabled = false;
     this.buttonType = buttonType;
-    this.buttonId = buttonId || `${buttonType}-${Date.now()}`;
+    this.buttonId = buttonId || `${buttonType}-${ulid()}`;
 
     this.on('pointerdown', () => {
       if (!this.disabled) this.setScale(0.95);

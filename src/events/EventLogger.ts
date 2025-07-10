@@ -1,3 +1,4 @@
+import { ulid } from 'ulid';
 import { IEvent } from './IEvent';
 import { EventBus } from './EventBus';
 
@@ -17,6 +18,7 @@ export enum LogLevel {
  * Event log entry interface
  */
 export interface EventLogEntry {
+  id: string;
   timestamp: number;
   event: IEvent;
   level: LogLevel;
@@ -88,10 +90,11 @@ export class EventLogger {
     if (!this.shouldLogEvent(event, level)) return;
 
     const logEntry: EventLogEntry = {
+      id: ulid(),
       timestamp: Date.now(),
       event,
       level,
-      message,
+      message: message || undefined,
       context: this.getEventContext(event)
     };
 
@@ -106,8 +109,10 @@ export class EventLogger {
     if (level > this.config.logLevel) return;
 
     const logEntry: EventLogEntry = {
+      id: ulid(),
       timestamp: Date.now(),
       event: {
+        id: ulid(),
         type: 'logger:message',
         timestamp: Date.now(),
         data: { message, context }

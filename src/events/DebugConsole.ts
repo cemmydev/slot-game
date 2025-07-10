@@ -1,7 +1,7 @@
 import { Scene } from 'phaser';
 import { EventManager } from './EventManager';
 import { EventLogger, LogLevel } from './EventLogger';
-import { EVENT_TYPES } from './GameEvents';
+import { EventUtils } from './EventUtils';
 
 /**
  * Debug console for runtime event monitoring and control
@@ -38,7 +38,7 @@ export class DebugConsole {
     try {
       // Toggle console with F12 or backtick key
       this.scene.input.keyboard.on('keydown-F12', () => {
-        this.toggle();
+        // this.toggle();
       });
 
       this.scene.input.keyboard.on('keydown-BACKTICK', () => {
@@ -289,13 +289,13 @@ export class DebugConsole {
       return;
     }
 
-    // Emit a test event
-    this.eventManager.emit({
-      type: `test:${eventType}`,
-      timestamp: Date.now(),
-      data: { test: true, command: 'debug-console' },
-      source: 'DebugConsole'
-    });
+    // Emit a test event using EventUtils
+    const testEvent = EventUtils.createEvent(
+      `test:${eventType}`,
+      { test: true, command: 'debug-console' },
+      'DebugConsole'
+    );
+    this.eventManager.emit(testEvent);
     
     this.addLogEntry(`Emitted test event: ${eventType}`);
   }
