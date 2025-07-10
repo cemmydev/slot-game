@@ -1,8 +1,5 @@
 import { IEvent, IEventHandler, EventListener, IEventSubscription } from './IEvent';
 
-/**
- * Event subscription implementation
- */
 class EventSubscription implements IEventSubscription {
   private active = true;
 
@@ -24,10 +21,6 @@ class EventSubscription implements IEventSubscription {
   }
 }
 
-/**
- * Central event bus for managing all game events
- * Implements the publish-subscribe pattern
- */
 export class EventBus {
   private listeners: Map<string, Set<EventListener | IEventHandler>> = new Map();
   private wildcardListeners: Set<EventListener | IEventHandler> = new Set();
@@ -35,9 +28,6 @@ export class EventBus {
   private maxHistorySize = 1000;
   private isLoggingEnabled = false;
 
-  /**
-   * Subscribe to a specific event type
-   */
   subscribe<T extends IEvent>(
     eventType: string,
     listener: EventListener | IEventHandler<T>
@@ -45,32 +35,24 @@ export class EventBus {
     if (!this.listeners.has(eventType)) {
       this.listeners.set(eventType, new Set());
     }
-    
+
     this.listeners.get(eventType)!.add(listener);
-    
+
     if (this.isLoggingEnabled) {
       console.log(`[EventBus] Subscribed to event: ${eventType}`);
     }
-    
+
     return new EventSubscription(this, eventType, listener);
   }
 
-  /**
-   * Subscribe to all events (wildcard subscription)
-   */
   subscribeToAll(listener: EventListener | IEventHandler): IEventSubscription {
     this.wildcardListeners.add(listener);
-    
     if (this.isLoggingEnabled) {
       console.log(`[EventBus] Subscribed to all events`);
     }
-    
     return new EventSubscription(this, '*', listener);
   }
 
-  /**
-   * Unsubscribe from an event type
-   */
   unsubscribe(eventType: string, listener: EventListener | IEventHandler): void {
     if (eventType === '*') {
       this.wildcardListeners.delete(listener);
@@ -83,35 +65,23 @@ export class EventBus {
         }
       }
     }
-    
     if (this.isLoggingEnabled) {
       console.log(`[EventBus] Unsubscribed from event: ${eventType}`);
     }
   }
 
-  /**
-   * Emit an event to all subscribers
-   */
   emit<T extends IEvent>(event: T): void {
-    // Add to history
     this.addToHistory(event);
-    
     if (this.isLoggingEnabled) {
       console.log(`[EventBus] Emitting event: ${event.type}`, event);
     }
 
-    // Notify specific event type listeners
     const eventListeners = this.listeners.get(event.type);
     if (eventListeners) {
-      eventListeners.forEach(listener => {
-        this.callListener(listener, event);
-      });
+      eventListeners.forEach(listener => this.callListener(listener, event));
     }
 
-    // Notify wildcard listeners
-    this.wildcardListeners.forEach(listener => {
-      this.callListener(listener, event);
-    });
+    this.wildcardListeners.forEach(listener => this.callListener(listener, event));
   }
 
   /**
