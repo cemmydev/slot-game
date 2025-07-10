@@ -22,7 +22,7 @@ export interface EventLogEntry {
   timestamp: number;
   event: IEvent;
   level: LogLevel;
-  message?: string;
+  message?: string | undefined;
   context?: any;
 }
 

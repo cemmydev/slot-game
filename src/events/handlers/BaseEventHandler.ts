@@ -73,7 +73,7 @@ export abstract class BaseEventHandler implements IEventHandler {
     handler: (event: T) => void
   ): void {
     this.subscriptions.push(
-      this.eventBus.subscribe(eventType, handler)
+      this.eventBus.subscribe(eventType, handler as (event: IEvent) => void)
     );
   }
 

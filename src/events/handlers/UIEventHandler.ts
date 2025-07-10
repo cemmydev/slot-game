@@ -35,7 +35,7 @@ export class UIEventHandler extends BaseEventHandler {
   /**
    * Setup specific event subscriptions for UI updates
    */
-  protected setupSubscriptions(): void {
+  protected override setupSubscriptions(): void {
     // Balance changes
     this.subscribe<BalanceChangedEvent>(EVENT_TYPES.BALANCE_CHANGED, (event) => {
       this.updateBalanceDisplay(event.data.newBalance);
@@ -181,7 +181,7 @@ export class UIEventHandler extends BaseEventHandler {
   /**
    * Check if this handler can handle the event
    */
-  canHandle(event: IEvent): boolean {
+  override canHandle(event: IEvent): boolean {
     const uiEvents = [
       EVENT_TYPES.BALANCE_CHANGED,
       EVENT_TYPES.BUTTON_STATE_CHANGED,

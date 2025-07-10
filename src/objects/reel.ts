@@ -1,5 +1,4 @@
 import { GameObjects, Scene } from 'phaser';
-import { GameConfig } from '../config';
 import Slot, { SlotConfig } from './slot';
 import { eventManager, ReelStoppedEvent } from '../events';
 
@@ -13,14 +12,13 @@ interface ReelConfig {
 
 export default class Reel extends GameObjects.Container {
   public override scene: Scene;
-  private slotSize: number;
-  private slotsCount: number;
-  private speed: number;
-  private stopDelay: number;
-  private updSlotCount: number;
-  private slowdown: boolean;
-  private resultSlots: (string | number)[];
-  public result: string[];
+  private slotSize!: number;
+  private slotsCount!: number;
+  private speed!: number;
+  private updSlotCount!: number;
+  private slowdown!: boolean;
+  private resultSlots!: (string | number)[];
+  public result!: string[];
   private rotating!: Phaser.Time.TimerEvent;
   private reelIndex: number = 0;
   private totalReels: number = 3;
@@ -38,14 +36,13 @@ export default class Reel extends GameObjects.Container {
     this.slotSize = config.slotSize;
     this.slotsCount = config.slotsCount;
     this.speed = config.speed;
-    this.stopDelay = config.stopDelay;
 
     this.updSlotCount = 0;
     this.slowdown = false;
     this.resultSlots = [];
     this.result = [];
 
-    this.setSize(config.width, config.height);        
+    this.setSize(config.width, config.height);
 
     this._createMask(scene);
     this._fillWithSlots(scene, config.slotsCount, slots);

@@ -27,18 +27,18 @@ export class AnimationEventHandler extends BaseEventHandler {
   /**
    * Setup specific event subscriptions for animations
    */
-  protected setupSubscriptions(): void {
+  protected override setupSubscriptions(): void {
     // Win animations
     this.subscribe<WinDetectedEvent>(EVENT_TYPES.WIN_DETECTED, (event) => {
       this.playWinAnimation(event.data);
     });
 
     // Spin animations
-    this.subscribe<SpinStartedEvent>(EVENT_TYPES.SPIN_STARTED, (event) => {
+    this.subscribe<SpinStartedEvent>(EVENT_TYPES.SPIN_STARTED, (_event) => {
       this.playSpinStartAnimation();
     });
 
-    this.subscribe<SpinCompletedEvent>(EVENT_TYPES.SPIN_COMPLETED, (event) => {
+    this.subscribe<SpinCompletedEvent>(EVENT_TYPES.SPIN_COMPLETED, (_event) => {
       this.playSpinCompleteAnimation();
     });
 
@@ -121,7 +121,9 @@ export class AnimationEventHandler extends BaseEventHandler {
     for (let i = 0; i < 10; i++) {
       const star = this.scene.add.graphics();
       star.fillStyle(0xFFD700);
-      star.fillStar(0, 0, 5, 10, 20);
+      // Create a star shape using fillPolygon instead of fillStar
+      const starPoints = this.createStarPoints(0, 0, 5, 10, 20);
+      star.fillPoints(starPoints);
       star.setPosition(
         centerX + (Math.random() - 0.5) * 200,
         centerY + (Math.random() - 0.5) * 200
@@ -170,6 +172,25 @@ export class AnimationEventHandler extends BaseEventHandler {
   }
 
   /**
+   * Create star points for drawing a star shape
+   */
+  private createStarPoints(x: number, y: number, points: number, innerRadius: number, outerRadius: number): Phaser.Geom.Point[] {
+    const starPoints: Phaser.Geom.Point[] = [];
+    const angle = Math.PI / points;
+
+    for (let i = 0; i < points * 2; i++) {
+      const radius = i % 2 === 0 ? outerRadius : innerRadius;
+      const currentAngle = i * angle;
+      starPoints.push(new Phaser.Geom.Point(
+        x + Math.cos(currentAngle) * radius,
+        y + Math.sin(currentAngle) * radius
+      ));
+    }
+
+    return starPoints;
+  }
+
+  /**
    * Highlight winning lines
    */
   private highlightWinLines(winLines: number[]): void {
@@ -193,21 +214,21 @@ export class AnimationEventHandler extends BaseEventHandler {
   /**
    * Check if this handler can handle the event
    */
-  canHandle(event: IEvent): boolean {
+  override canHandle(event: IEvent): boolean {
     const animationEvents = [
       EVENT_TYPES.WIN_DETECTED,
       EVENT_TYPES.SPIN_STARTED,
       EVENT_TYPES.SPIN_COMPLETED,
       EVENT_TYPES.REEL_STOPPED
     ];
-    
+
     return animationEvents.includes(event.type as any);
   }
 
   /**
    * Cleanup when handler is destroyed
    */
-  destroy(): void {
+  override destroy(): void {
     this.stopAllAnimations();
     super.destroy();
   }

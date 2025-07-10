@@ -11,7 +11,7 @@ export interface IEvent {
   /** Optional event data payload */
   readonly data?: any;
   /** Optional event source identifier */
-  readonly source?: string;
+  readonly source?: string | undefined;
 }
 
 import { ulid } from 'ulid';
