@@ -46,8 +46,7 @@ export class UIEventHandler extends BaseEventHandler {
       this.updateButtonState(event.data.buttonType, event.data.newState);
     });
 
-    // Spin events
-    this.subscribe<SpinStartedEvent>(EVENT_TYPES.SPIN_STARTED, (event) => {
+    this.subscribe<SpinStartedEvent>(EVENT_TYPES.SPIN_STARTED, (_event) => {
       this.onSpinStarted();
     });
 

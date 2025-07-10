@@ -35,7 +35,6 @@ module.exports = {
             }
         ]
     },
-    // Webpack 5 has built-in caching, no need for hard-source-webpack-plugin
     cache: {
         type: 'filesystem'
     }

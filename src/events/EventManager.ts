@@ -6,10 +6,6 @@ import { DebugEventHandler } from './handlers/DebugEventHandler';
 import { AnimationEventHandler } from './handlers/AnimationEventHandler';
 import { EventLogger, LogLevel } from './EventLogger';
 
-/**
- * Central manager for all event handlers
- * Coordinates the event system and provides easy access to handlers
- */
 export class EventManager {
   private eventBus: EventBus;
   private handlers: Map<string, BaseEventHandler> = new Map();
@@ -20,9 +16,6 @@ export class EventManager {
     this.eventBus = eventBus || globalEventBus;
   }
 
-  /**
-   * Initialize the event manager with a Phaser scene
-   */
   initialize(scene: Scene, options: {
     enableDebugLogging?: boolean;
     debugLogLevel?: 'none' | 'basic' | 'detailed' | 'verbose';
@@ -41,7 +34,6 @@ export class EventManager {
       logLevel = LogLevel.INFO
     } = options;
 
-    // Enable event bus logging if debug is enabled
     if (this.eventBus && typeof this.eventBus.setLogging === 'function') {
       this.eventBus.setLogging(enableDebugLogging);
     } else {
@@ -49,24 +41,17 @@ export class EventManager {
       return;
     }
 
-    // Initialize advanced logging
     if (enableAdvancedLogging) {
       this.initializeEventLogger(logLevel);
     }
 
-    // Create and register handlers
     this.createHandlers(scene, debugLogLevel);
-
-    // Start all handlers
     this.startAllHandlers();
 
     this.isInitialized = true;
     console.log('[EventManager] Initialized with handlers:', Array.from(this.handlers.keys()));
   }
 
-  /**
-   * Initialize event logger
-   */
   private initializeEventLogger(logLevel: LogLevel): void {
     this.eventLogger = new EventLogger(this.eventBus, {
       logLevel,
@@ -77,13 +62,7 @@ export class EventManager {
     this.eventLogger.start();
   }
 
-
-
-  /**
-   * Create all event handlers
-   */
   private createHandlers(scene: Scene, debugLogLevel: 'none' | 'basic' | 'detailed' | 'verbose'): void {
-    // UI Event Handler
     const uiHandler = new UIEventHandler(this.eventBus, scene);
     this.handlers.set('ui', uiHandler);
 

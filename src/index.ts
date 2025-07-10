@@ -8,7 +8,6 @@ const phaserConfig: Phaser.Types.Core.GameConfig = {
   ...config.phaser,
   type: Phaser.AUTO,
   scene: [BootScene, PreloadScene, GameScene],
-  // Modern Phaser 3 built-in scaling configuration
   scale: {
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,

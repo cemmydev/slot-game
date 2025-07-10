@@ -84,18 +84,12 @@ export class EventBus {
     this.wildcardListeners.forEach(listener => this.callListener(listener, event));
   }
 
-  /**
-   * Call a listener safely with error handling
-   */
   private callListener(listener: EventListener | IEventHandler, event: IEvent): void {
     try {
       if (typeof listener === 'function') {
         listener(event);
       } else {
-        // Check if handler can handle this event
-        if (listener.canHandle && !listener.canHandle(event)) {
-          return;
-        }
+        if (listener.canHandle && !listener.canHandle(event)) return;
         listener.handle(event);
       }
     } catch (error) {
@@ -103,61 +97,37 @@ export class EventBus {
     }
   }
 
-  /**
-   * Add event to history
-   */
   private addToHistory(event: IEvent): void {
     this.eventHistory.push(event);
-    
-    // Maintain history size limit
     if (this.eventHistory.length > this.maxHistorySize) {
       this.eventHistory.shift();
     }
   }
 
-  /**
-   * Get event history
-   */
   getEventHistory(): readonly IEvent[] {
     return [...this.eventHistory];
   }
 
-  /**
-   * Clear event history
-   */
   clearHistory(): void {
     this.eventHistory = [];
   }
 
-  /**
-   * Enable/disable event logging
-   */
   setLogging(enabled: boolean): void {
     this.isLoggingEnabled = enabled;
   }
 
-  /**
-   * Get current subscriber count for an event type
-   */
   getSubscriberCount(eventType: string): number {
     const listeners = this.listeners.get(eventType);
     return listeners ? listeners.size : 0;
   }
 
-  /**
-   * Get all registered event types
-   */
   getRegisteredEventTypes(): string[] {
     return Array.from(this.listeners.keys());
   }
 
-  /**
-   * Clear all subscriptions
-   */
   clear(): void {
     this.listeners.clear();
     this.wildcardListeners.clear();
-    
     if (this.isLoggingEnabled) {
       console.log(`[EventBus] Cleared all subscriptions`);
     }
